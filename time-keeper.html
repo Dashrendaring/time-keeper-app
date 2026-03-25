@@ -10,554 +10,128 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #141414;
-    --surface2: #1c1c1c;
-    --border: #2a2a2a;
-    --accent: #e8ff47;
-    --accent2: #47ffe8;
-    --danger: #ff4747;
-    --text: #f0f0f0;
-    --text-dim: #666;
-    --text-muted: #333;
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --bg: #0a0a0a; --surface: #141414; --surface2: #1c1c1c; --border: #2a2a2a;
+    --accent: #e8ff47; --accent2: #47ffe8; --danger: #ff4747; --warn: #ffaa47;
+    --text: #f0f0f0; --text-dim: #666; --text-muted: #333;
+    --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    min-height: 100dvh;
-    overflow-x: hidden;
-    padding-top: var(--safe-top);
-    padding-bottom: calc(var(--safe-bottom) + 80px);
-  }
-
-  /* NAV TABS */
-  .nav {
-    position: fixed;
-    bottom: 0;
-    left: 0; right: 0;
-    padding-bottom: var(--safe-bottom);
-    background: rgba(10,10,10,0.95);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border);
-    display: flex;
-    z-index: 100;
-  }
-  .nav-btn {
-    flex: 1;
-    padding: 14px 8px 10px;
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: color 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
+  body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; min-height: 100dvh; overflow-x: hidden; padding-top: var(--safe-top); padding-bottom: calc(var(--safe-bottom) + 80px); }
+  .nav { position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: var(--safe-bottom); background: rgba(10,10,10,0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--border); display: flex; z-index: 100; }
+  .nav-btn { flex: 1; padding: 14px 8px 10px; background: none; border: none; color: var(--text-dim); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: color 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .nav-btn svg { width: 20px; height: 20px; }
   .nav-btn.active { color: var(--accent); }
-
-  /* PAGES */
   .page { display: none; padding: 20px 16px; }
   .page.active { display: block; }
-
-  /* HEADER */
-  .page-header {
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-  }
-  .page-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text);
-  }
-  .page-sub {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 4px;
-    letter-spacing: 0.5px;
-  }
-
-  /* CLOCK IN/OUT */
-  .clock-display {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  .current-time {
-    font-size: 48px;
-    font-weight: 300;
-    letter-spacing: -1px;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .current-date {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 8px;
-    letter-spacing: 1px;
-  }
-  .clocked-in-badge {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
+  .page-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text); }
+  .page-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; letter-spacing: 0.5px; }
+  .clock-display { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 20px; }
+  .current-time { font-size: 48px; font-weight: 300; letter-spacing: -1px; color: var(--accent); line-height: 1; }
+  .current-date { font-size: 12px; color: var(--text-dim); margin-top: 8px; letter-spacing: 1px; }
+  .clocked-in-badge { display: inline-block; margin-top: 12px; padding: 4px 12px; border-radius: 20px; font-size: 11px; letter-spacing: 1.5px; font-weight: 600; text-transform: uppercase; }
   .clocked-in-badge.in { background: rgba(232,255,71,0.1); color: var(--accent); border: 1px solid rgba(232,255,71,0.3); }
   .clocked-in-badge.out { background: rgba(255,71,71,0.1); color: var(--danger); border: 1px solid rgba(255,71,71,0.3); }
-
-  .btn-clock {
-    width: 100%;
-    padding: 18px;
-    border: none;
-    border-radius: 12px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-bottom: 12px;
-  }
+  .btn-clock { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: all 0.15s; margin-bottom: 12px; }
   .btn-clock.clock-in { background: var(--accent); color: #0a0a0a; }
   .btn-clock.clock-in:active { transform: scale(0.98); background: #d4eb3a; }
   .btn-clock.clock-out { background: var(--danger); color: white; }
   .btn-clock.clock-out:active { transform: scale(0.98); background: #e03e3e; }
   .btn-clock:disabled { opacity: 0.3; cursor: not-allowed; }
-
-  /* MANUAL ENTRY */
-  .manual-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-  .manual-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 14px;
-  }
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
+  .manual-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+  .manual-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-label {
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-weight: 600;
-  }
-  .form-input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    padding: 10px 12px;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  .form-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); font-weight: 600; }
+  .form-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; padding: 10px 12px; width: 100%; outline: none; transition: border-color 0.2s; }
   .form-input:focus { border-color: var(--accent); }
   .form-input[type="date"], .form-input[type="time"] { color-scheme: dark; }
-
-  .form-note {
-    font-size: 10px;
-    color: var(--text-dim);
-    margin-bottom: 10px;
-    letter-spacing: 0.3px;
-  }
-
-  .btn-add {
-    width: 100%;
-    padding: 14px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--accent2);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
+  .form-note { font-size: 10px; color: var(--text-dim); margin-bottom: 10px; letter-spacing: 0.3px; }
+  .btn-add { width: 100%; padding: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; color: var(--accent2); font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
   .btn-add:active { background: rgba(71, 255, 232, 0.1); }
-
-  /* ENTRIES LIST */
   .entries-list { display: flex; flex-direction: column; gap: 8px; }
-  .entry-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .entry-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    flex-shrink: 0;
-  }
+  .entry-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+  .entry-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
   .entry-info { flex: 1; min-width: 0; }
-  .entry-date {
-    font-size: 11px;
-    color: var(--text-dim);
-    letter-spacing: 0.5px;
-  }
-  .entry-times {
-    font-size: 14px;
-    color: var(--text);
-    margin-top: 2px;
-  }
-  .entry-hours {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--accent);
-    flex-shrink: 0;
-  }
-  .entry-delete {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 4px;
-    font-size: 18px;
-    line-height: 1;
-    transition: color 0.15s;
-  }
+  .entry-date { font-size: 11px; color: var(--text-dim); letter-spacing: 0.5px; }
+  .entry-times { font-size: 14px; color: var(--text); margin-top: 2px; }
+  .entry-hours { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+  .entry-delete { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; font-size: 18px; line-height: 1; transition: color 0.15s; }
   .entry-delete:active { color: var(--danger); }
-  .no-entries {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-muted);
-    font-size: 13px;
-    letter-spacing: 0.5px;
-  }
-
-  /* PERIOD / SUMMARY */
-  .period-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 16px;
-  }
-  .period-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 8px;
-  }
-  .period-dates {
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-bottom: 12px;
-  }
-  .period-total {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 52px;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: -1px;
-    line-height: 1;
-  }
-  .period-total-label {
-    font-size: 12px;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    margin-top: 4px;
-  }
-  .period-breakdown {
-    margin-top: 16px;
-    border-top: 1px solid var(--border);
-    padding-top: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .breakdown-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--text-dim);
-  }
+  .no-entries { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 13px; letter-spacing: 0.5px; }
+  .period-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .period-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .period-dates { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
+  .period-total { font-family: 'Barlow Condensed', sans-serif; font-size: 52px; font-weight: 700; color: var(--accent); letter-spacing: -1px; line-height: 1; }
+  .period-total-label { font-size: 12px; color: var(--text-dim); letter-spacing: 1px; margin-top: 4px; }
+  .period-breakdown { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .breakdown-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); }
   .breakdown-row span:last-child { color: var(--text); }
-
-  .period-nav {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  .period-nav-btn {
-    flex: 1;
-    padding: 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: center;
-  }
+  .period-nav { display: flex; gap: 10px; margin-bottom: 16px; }
+  .period-nav-btn { flex: 1; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 12px; cursor: pointer; transition: all 0.15s; text-align: center; }
   .period-nav-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(232,255,71,0.05); }
-
-  .btn-report {
-    width: 100%;
-    padding: 16px;
-    background: var(--accent);
-    border: none;
-    border-radius: 10px;
-    color: #0a0a0a;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-bottom: 10px;
-  }
+  .btn-report { width: 100%; padding: 16px; background: var(--accent); border: none; border-radius: 10px; color: #0a0a0a; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.15s; margin-bottom: 10px; }
   .btn-report:active { background: #d4eb3a; transform: scale(0.99); }
-  .btn-report.secondary {
-    background: transparent;
-    border: 1px solid var(--accent2);
-    color: var(--accent2);
-  }
+  .btn-report.secondary { background: transparent; border: 1px solid var(--accent2); color: var(--accent2); }
   .btn-report.secondary:active { background: rgba(71,255,232,0.08); }
-
-  /* SETTINGS */
-  .setting-row {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 10px;
-  }
-  .setting-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text);
-    margin-bottom: 8px;
-  }
+  .log-file-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .log-file-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .log-file-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
+  .log-file-status { font-size: 11px; color: var(--text-dim); margin-bottom: 12px; padding: 8px 10px; background: var(--surface2); border-radius: 6px; border-left: 3px solid var(--border); }
+  .log-file-status.loaded { border-left-color: var(--accent); color: var(--accent); }
+  .log-file-status.unsaved { border-left-color: var(--warn); color: var(--warn); }
+  .log-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .btn-log { padding: 12px 8px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.15s; text-align: center; }
+  .btn-log.load { background: var(--surface2); border: 1px solid var(--accent2); color: var(--accent2); }
+  .btn-log.save { background: var(--surface2); border: 1px solid var(--accent); color: var(--accent); }
+  .btn-log:active { opacity: 0.7; transform: scale(0.98); }
+  #file-input { display: none; }
+  .setting-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 10px; }
+  .setting-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text); margin-bottom: 8px; }
   .setting-desc { font-size: 11px; color: var(--text-dim); margin-bottom: 10px; }
-  
-  .period-selector {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-  }
-  .period-opt {
-    padding: 8px 6px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.15s;
-  }
+  .period-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .period-opt { padding: 8px 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: pointer; text-align: center; transition: all 0.15s; }
   .period-opt.active { border-color: var(--accent); color: var(--accent); background: rgba(232,255,71,0.05); }
-  
-  .boss-input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    padding: 10px 12px;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.2s;
-    margin-bottom: 8px;
-  }
+  .boss-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 10px 12px; width: 100%; outline: none; transition: border-color 0.2s; margin-bottom: 8px; }
   .boss-input:focus { border-color: var(--accent2); }
-  .btn-save {
-    padding: 10px 20px;
-    background: var(--surface2);
-    border: 1px solid var(--accent2);
-    border-radius: 8px;
-    color: var(--accent2);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 200;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: calc(var(--safe-bottom) + 10px);
-  }
+  .btn-save { padding: 10px 20px; background: var(--surface2); border: 1px solid var(--accent2); border-radius: 8px; color: var(--accent2); font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: flex-end; justify-content: center; padding-bottom: calc(var(--safe-bottom) + 10px); }
   .modal-overlay.active { display: flex; }
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px 16px 12px 12px;
-    width: 100%;
-    max-width: 480px;
-    padding: 20px;
-    max-height: 80dvh;
-    overflow-y: auto;
-  }
-  .modal-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px 16px 12px 12px; width: 100%; max-width: 480px; padding: 20px; max-height: 80dvh; overflow-y: auto; }
+  .modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
   .modal-sub { font-size: 11px; color: var(--text-dim); margin-bottom: 16px; }
-  .report-text {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 12px;
-    line-height: 1.7;
-    white-space: pre-wrap;
-    color: var(--text);
-    margin-bottom: 14px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
+  .report-text { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; line-height: 1.7; white-space: pre-wrap; color: var(--text); margin-bottom: 14px; max-height: 300px; overflow-y: auto; }
   .modal-actions { display: flex; gap: 8px; }
-  .modal-btn {
-    flex: 1;
-    padding: 12px;
-    border-radius: 8px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: none;
-    transition: all 0.15s;
-  }
+  .modal-btn { flex: 1; padding: 12px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.15s; }
   .modal-btn.primary { background: var(--accent); color: #0a0a0a; }
   .modal-btn.ghost { background: var(--surface2); color: var(--text-dim); }
   .modal-btn:active { transform: scale(0.98); }
-
-  .toast {
-    position: fixed;
-    top: calc(var(--safe-top) + 16px);
-    left: 50%;
-    transform: translateX(-50%) translateY(-80px);
-    background: var(--accent);
-    color: #0a0a0a;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    z-index: 300;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    white-space: nowrap;
-  }
+  .toast { position: fixed; top: calc(var(--safe-top) + 16px); left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--accent); color: #0a0a0a; padding: 10px 20px; border-radius: 20px; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; z-index: 300; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
-
   .divider { height: 1px; background: var(--border); margin: 16px 0; }
-  .danger-zone { margin-top: 8px; }
-  .btn-danger {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: 1px solid rgba(255,71,71,0.3);
-    border-radius: 8px;
-    color: var(--danger);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    opacity: 0.7;
-  }
+  .btn-danger { width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(255,71,71,0.3); border-radius: 8px; color: var(--danger); font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; opacity: 0.7; }
   .btn-danger:active { opacity: 1; background: rgba(255,71,71,0.08); }
-
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .pulsing { animation: pulse 1.5s ease-in-out infinite; }
 </style>
 </head>
 <body>
 
-<!-- PAGES -->
+<input type="file" id="file-input" accept=".timekeeperlog,.json">
+
 <div id="page-clock" class="page active">
   <div class="page-header">
     <div class="page-title">Clock</div>
     <div class="page-sub" id="clock-period-label">Loading period...</div>
   </div>
-
   <div class="clock-display">
     <div class="current-time" id="live-time">--:--:--</div>
     <div class="current-date" id="live-date"></div>
     <div class="clocked-in-badge out" id="status-badge">NOT CLOCKED IN</div>
   </div>
-
   <button class="btn-clock clock-in" id="btn-clock-in" onclick="clockIn()">CLOCK IN</button>
   <button class="btn-clock clock-out" id="btn-clock-out" onclick="clockOut()" disabled>CLOCK OUT</button>
-
   <div class="divider"></div>
-
   <div class="manual-section">
     <div class="manual-title">Manual Entry</div>
     <div class="form-row">
@@ -595,20 +169,17 @@
     <div class="page-title">Summary</div>
     <div class="page-sub">Pay period totals</div>
   </div>
-
   <div class="period-nav">
     <button class="period-nav-btn active" id="btn-current-period" onclick="setPeriodView('current')">Current</button>
     <button class="period-nav-btn" id="btn-prev-period" onclick="setPeriodView('prev')">Previous</button>
   </div>
-
-  <div class="period-card" id="summary-card">
+  <div class="period-card">
     <div class="period-label">Pay Period</div>
     <div class="period-dates" id="summary-dates"></div>
     <div class="period-total" id="summary-total">0.00</div>
     <div class="period-total-label">HOURS</div>
     <div class="period-breakdown" id="summary-breakdown"></div>
   </div>
-
   <button class="btn-report" onclick="generateReport()">GENERATE REPORT</button>
   <button class="btn-report secondary" onclick="generateReport('email')">EMAIL TO BOSS</button>
 </div>
@@ -616,7 +187,17 @@
 <div id="page-settings" class="page">
   <div class="page-header">
     <div class="page-title">Settings</div>
-    <div class="page-sub">Configure your pay period</div>
+    <div class="page-sub">Configure your setup</div>
+  </div>
+
+  <div class="log-file-section">
+    <div class="log-file-title">Log File</div>
+    <div class="log-file-desc">Entries live in a <strong style="color:var(--text)">timekeeperlog</strong> file on your device. Load it when you open the app. Save it after adding entries.</div>
+    <div class="log-file-status" id="log-status">No log loaded — tap LOAD LOG to restore your entries</div>
+    <div class="log-btn-row">
+      <button class="btn-log load" onclick="loadLog()">LOAD LOG</button>
+      <button class="btn-log save" onclick="saveLog()">SAVE LOG</button>
+    </div>
   </div>
 
   <div class="setting-row">
@@ -651,13 +232,12 @@
     <button class="btn-save" onclick="saveSettings()">SAVE</button>
   </div>
 
-  <div class="setting-row danger-zone">
+  <div class="setting-row">
     <div class="setting-label">Data</div>
     <button class="btn-danger" onclick="clearAllData()">CLEAR ALL ENTRIES</button>
   </div>
 </div>
 
-<!-- REPORT MODAL -->
 <div class="modal-overlay" id="report-modal">
   <div class="modal">
     <div class="modal-title">Report Ready</div>
@@ -672,7 +252,6 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- BOTTOM NAV -->
 <nav class="nav">
   <button class="nav-btn active" onclick="showPage('clock')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -693,57 +272,85 @@
 </nav>
 
 <script>
-// ---- STATE ----
 let state = {
-  entries: [],
-  clockedIn: false,
-  clockInTime: null,
-  periodType: 'biweekly',
-  startDay: 1,
-  userName: '',
-  bossEmail: '',
+  entries: [], clockedIn: false, clockInTime: null,
+  periodType: 'biweekly', startDay: 1, userName: '', bossEmail: '',
 };
-
 let currentPeriodView = 'current';
 let currentReportText = '';
+let logFileLoaded = false;
+let unsavedChanges = false;
 
-// ---- STORAGE ----
-function save() {
-  try { localStorage.setItem('tk_state', JSON.stringify(state)); } catch(e){}
+function saveSettings_store() {
+  try { localStorage.setItem('tk_settings', JSON.stringify({ periodType: state.periodType, startDay: state.startDay, userName: state.userName, bossEmail: state.bossEmail })); } catch(e) {}
 }
-function load() {
-  try {
-    const d = localStorage.getItem('tk_state');
-    if (d) state = { ...state, ...JSON.parse(d) };
-  } catch(e){}
+function loadSettings_store() {
+  try { const d = localStorage.getItem('tk_settings'); if (d) { const s = JSON.parse(d); state.periodType = s.periodType || 'biweekly'; state.startDay = s.startDay ?? 1; state.userName = s.userName || ''; state.bossEmail = s.bossEmail || ''; } } catch(e) {}
 }
 
-// ---- ROUNDING ----
-function roundUpQuarter(hours) {
-  return Math.ceil(hours * 4) / 4;
+function saveLog() {
+  const payload = JSON.stringify({ version: 1, exported: new Date().toISOString(), userName: state.userName, periodType: state.periodType, startDay: state.startDay, clockedIn: state.clockedIn, clockInTime: state.clockInTime, entries: state.entries }, null, 2);
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'timekeeperlog';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  unsavedChanges = false; logFileLoaded = true;
+  updateLogStatus('Log saved -- load it next session to restore entries', 'loaded');
+  showToast('Log saved');
 }
 
-// ---- PAY PERIOD ----
+function loadLog() { document.getElementById('file-input').click(); }
+
+document.getElementById('file-input').addEventListener('change', function(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data.entries) throw new Error('Invalid');
+      state.entries = data.entries || [];
+      state.clockedIn = data.clockedIn || false;
+      state.clockInTime = data.clockInTime || null;
+      if (data.periodType) state.periodType = data.periodType;
+      if (data.startDay !== undefined) state.startDay = data.startDay;
+      if (data.userName) state.userName = data.userName;
+      logFileLoaded = true; unsavedChanges = false;
+      updateLogStatus('Loaded: ' + file.name + ' (' + state.entries.length + ' entries)', 'loaded');
+      updateClockUI(); renderLog(); renderSummary(); loadSettingsUI();
+      showToast(state.entries.length + ' entries loaded');
+    } catch(err) { showToast('Invalid log file'); }
+  };
+  reader.readAsText(file); this.value = '';
+});
+
+function updateLogStatus(msg, type) {
+  const el = document.getElementById('log-status');
+  el.textContent = msg;
+  el.className = 'log-file-status' + (type ? ' ' + type : '');
+}
+function markUnsaved() {
+  unsavedChanges = true;
+  updateLogStatus(logFileLoaded ? 'Unsaved changes -- tap SAVE LOG to update your file' : 'Entries in memory -- tap SAVE LOG to create your file', 'unsaved');
+}
+
+function roundUpQuarter(h) { return Math.ceil(h * 4) / 4; }
+
 function getPeriodBounds(type, startDay, refDate) {
-  const d = refDate ? new Date(refDate) : new Date();
-  d.setHours(0,0,0,0);
-
+  const d = refDate ? new Date(refDate) : new Date(); d.setHours(0,0,0,0);
   if (type === 'weekly') {
-    const day = d.getDay();
-    let diff = (day - startDay + 7) % 7;
+    const diff = (d.getDay() - startDay + 7) % 7;
     const start = new Date(d); start.setDate(d.getDate() - diff);
     const end = new Date(start); end.setDate(start.getDate() + 6);
     return { start, end };
   }
   if (type === 'biweekly') {
-    const day = d.getDay();
-    let diff = (day - startDay + 7) % 7;
+    const diff = (d.getDay() - startDay + 7) % 7;
     const thisWeekStart = new Date(d); thisWeekStart.setDate(d.getDate() - diff);
-    // figure out which biweek we're in relative to an epoch
     const epoch = new Date(2024, 0, 1);
     while (epoch.getDay() !== startDay) epoch.setDate(epoch.getDate() + 1);
-    const msSince = thisWeekStart - epoch;
-    const weeksSince = Math.floor(msSince / (7 * 86400000));
+    const weeksSince = Math.floor((thisWeekStart - epoch) / (7 * 86400000));
     const periodNum = Math.floor(weeksSince / 2);
     const start = new Date(epoch); start.setDate(epoch.getDate() + periodNum * 14);
     const end = new Date(start); end.setDate(start.getDate() + 13);
@@ -751,89 +358,37 @@ function getPeriodBounds(type, startDay, refDate) {
   }
   if (type === 'semimonthly') {
     const y = d.getFullYear(), m = d.getMonth();
-    if (d.getDate() <= 15) {
-      return { start: new Date(y, m, 1), end: new Date(y, m, 15) };
-    } else {
-      return { start: new Date(y, m, 16), end: new Date(y, m+1, 0) };
-    }
+    return d.getDate() <= 15
+      ? { start: new Date(y, m, 1), end: new Date(y, m, 15) }
+      : { start: new Date(y, m, 16), end: new Date(y, m+1, 0) };
   }
 }
-
 function getPrevPeriod(type, startDay) {
   const cur = getPeriodBounds(type, startDay);
   const prev = new Date(cur.start); prev.setDate(prev.getDate() - 1);
   return getPeriodBounds(type, startDay, prev);
 }
+function fmtDate(d) { return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
+function fmtDateShort(d) { return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' }); }
+function toESTTimeStr(date) { return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' }); }
+function toESTDateStr(date) { return date.toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); }
+function fmt12(t) { const [h, m] = t.split(':').map(Number); return (h % 12 || 12) + ':' + String(m).padStart(2,'0') + ' ' + (h >= 12 ? 'PM' : 'AM'); }
 
-function fmtDate(d) {
-  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-}
-function fmtDateShort(d) {
-  return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-}
-
-// ---- CLOCK IN/OUT ----
-function toESTTimeStr(date) {
-  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' });
-}
-function toESTDateStr(date) {
-  return date.toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); // YYYY-MM-DD
-}
-
-function clockIn() {
-  state.clockedIn = true;
-  state.clockInTime = new Date().toISOString();
-  save();
-  updateClockUI();
-  showToast('Clocked In');
-}
-
+function clockIn() { state.clockedIn = true; state.clockInTime = new Date().toISOString(); markUnsaved(); updateClockUI(); showToast('Clocked In'); }
 function clockOut() {
   if (!state.clockedIn || !state.clockInTime) return;
-  const inTime = new Date(state.clockInTime);
-  const outTime = new Date();
+  const inTime = new Date(state.clockInTime), outTime = new Date();
   const hrs = (outTime - inTime) / 3600000;
   const rounded = roundUpQuarter(hrs);
-  const entry = {
-    id: Date.now(),
-    date: toESTDateStr(inTime),
-    inTime: toESTTimeStr(inTime),
-    outTime: toESTTimeStr(outTime),
-    rawHours: hrs,
-    hours: rounded,
-  };
-  state.entries.unshift(entry);
-  state.clockedIn = false;
-  state.clockInTime = null;
-  save();
-  updateClockUI();
-  renderLog();
-  showToast(`+${rounded.toFixed(2)} hrs logged`);
+  state.entries.unshift({ id: Date.now(), date: toESTDateStr(inTime), inTime: toESTTimeStr(inTime), outTime: toESTTimeStr(outTime), rawHours: hrs, hours: rounded });
+  state.clockedIn = false; state.clockInTime = null;
+  markUnsaved(); updateClockUI(); renderLog();
+  showToast('+' + rounded.toFixed(2) + ' hrs logged');
 }
-
 function updateClockUI() {
-  const btn_in = document.getElementById('btn-clock-in');
-  const btn_out = document.getElementById('btn-clock-out');
-  const badge = document.getElementById('status-badge');
-  if (state.clockedIn) {
-    btn_in.disabled = true;
-    btn_out.disabled = false;
-    badge.textContent = 'CLOCKED IN';
-    badge.className = 'clocked-in-badge in pulsing';
-  } else {
-    btn_in.disabled = false;
-    btn_out.disabled = true;
-    badge.textContent = 'NOT CLOCKED IN';
-    badge.className = 'clocked-in-badge out';
-  }
-}
-
-// ---- MANUAL ENTRY ----
-function fmt12(timeStr) {
-  const [h, m] = timeStr.split(':').map(Number);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
-  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+  const bi = document.getElementById('btn-clock-in'), bo = document.getElementById('btn-clock-out'), badge = document.getElementById('status-badge');
+  if (state.clockedIn) { bi.disabled = true; bo.disabled = false; badge.textContent = 'CLOCKED IN'; badge.className = 'clocked-in-badge in pulsing'; }
+  else { bi.disabled = false; bo.disabled = true; badge.textContent = 'NOT CLOCKED IN'; badge.className = 'clocked-in-badge out'; }
 }
 
 function addManualEntry() {
@@ -841,290 +396,129 @@ function addManualEntry() {
   const inT = document.getElementById('manual-in').value;
   const outT = document.getElementById('manual-out').value;
   if (!date || !inT || !outT) { showToast('Fill in all fields'); return; }
-  const inMs = parseTime(inT);
-  const outMs = parseTime(outT);
+  const inMs = parseTime(inT), outMs = parseTime(outT);
   if (outMs <= inMs) { showToast('Out must be after In'); return; }
-  const hrs = (outMs - inMs) / 3600000;
-  const rounded = roundUpQuarter(hrs);
-  const entry = {
-    id: Date.now(),
-    date,
-    inTime: fmt12(inT),
-    outTime: fmt12(outT),
-    rawHours: hrs,
-    hours: rounded,
-  };
-  state.entries.unshift(entry);
-  save();
-  renderLog();
-  showToast(`+${rounded.toFixed(2)} hrs added`);
-  document.getElementById('manual-in').value = '';
-  document.getElementById('manual-out').value = '';
+  const hrs = (outMs - inMs) / 3600000, rounded = roundUpQuarter(hrs);
+  state.entries.unshift({ id: Date.now(), date, inTime: fmt12(inT), outTime: fmt12(outT), rawHours: hrs, hours: rounded });
+  markUnsaved(); renderLog();
+  showToast('+' + rounded.toFixed(2) + ' hrs added');
+  document.getElementById('manual-in').value = ''; document.getElementById('manual-out').value = '';
 }
+function parseTime(t) { const [h, m] = t.split(':').map(Number); return (h * 60 + m) * 60000; }
+function deleteEntry(id) { state.entries = state.entries.filter(e => e.id !== id); markUnsaved(); renderLog(); renderSummary(); showToast('Entry removed'); }
 
-function parseTime(t) {
-  const [h, m] = t.split(':').map(Number);
-  return (h * 60 + m) * 60000;
-}
-
-function deleteEntry(id) {
-  state.entries = state.entries.filter(e => e.id !== id);
-  save();
-  renderLog();
-  renderSummary();
-  showToast('Entry removed');
-}
-
-// ---- RENDER LOG ----
 function renderLog() {
-  const list = document.getElementById('entries-list');
-  const count = document.getElementById('log-count');
-  count.textContent = `${state.entries.length} entr${state.entries.length !== 1 ? 'ies' : 'y'}`;
-  if (!state.entries.length) {
-    list.innerHTML = '<div class="no-entries">No entries yet.<br>Clock in or add manually.</div>';
-    return;
-  }
-  list.innerHTML = state.entries.map(e => `
-    <div class="entry-card">
-      <div class="entry-dot"></div>
-      <div class="entry-info">
-        <div class="entry-date">${fmtDateShort(new Date(e.date + 'T12:00:00'))}</div>
-        <div class="entry-times">${e.inTime} &rarr; ${e.outTime}</div>
-      </div>
-      <div class="entry-hours">${e.hours.toFixed(2)}</div>
-      <button class="entry-delete" onclick="deleteEntry(${e.id})">&#x2715;</button>
-    </div>
-  `).join('');
+  const list = document.getElementById('entries-list'), count = document.getElementById('log-count');
+  count.textContent = state.entries.length + ' entr' + (state.entries.length !== 1 ? 'ies' : 'y');
+  if (!state.entries.length) { list.innerHTML = '<div class="no-entries">No entries yet.<br>Clock in or add manually.</div>'; return; }
+  list.innerHTML = state.entries.map(e => '<div class="entry-card"><div class="entry-dot"></div><div class="entry-info"><div class="entry-date">' + fmtDateShort(new Date(e.date + 'T12:00:00')) + '</div><div class="entry-times">' + e.inTime + ' &rarr; ' + e.outTime + '</div></div><div class="entry-hours">' + e.hours.toFixed(2) + '</div><button class="entry-delete" onclick="deleteEntry(' + e.id + ')">&#x2715;</button></div>').join('');
 }
 
-// ---- RENDER SUMMARY ----
 function renderSummary() {
-  const bounds = currentPeriodView === 'current'
-    ? getPeriodBounds(state.periodType, state.startDay)
-    : getPrevPeriod(state.periodType, state.startDay);
-
-  const label = document.getElementById('clock-period-label');
+  const bounds = currentPeriodView === 'current' ? getPeriodBounds(state.periodType, state.startDay) : getPrevPeriod(state.periodType, state.startDay);
   const cur = getPeriodBounds(state.periodType, state.startDay);
-  label.textContent = `Period: ${fmtDate(cur.start)} - ${fmtDate(cur.end)}`;
-
-  document.getElementById('summary-dates').textContent =
-    `${fmtDate(bounds.start)} — ${fmtDate(bounds.end)}`;
-
+  document.getElementById('clock-period-label').textContent = 'Period: ' + fmtDate(cur.start) + ' - ' + fmtDate(cur.end);
+  document.getElementById('summary-dates').textContent = fmtDate(bounds.start) + ' - ' + fmtDate(bounds.end);
   const entries = getEntriesInPeriod(bounds);
   const total = entries.reduce((s, e) => s + e.hours, 0);
   document.getElementById('summary-total').textContent = total.toFixed(2);
-
   const breakdown = document.getElementById('summary-breakdown');
-  if (entries.length === 0) {
-    breakdown.innerHTML = '<div class="breakdown-row"><span>No entries this period</span></div>';
-    return;
-  }
+  if (!entries.length) { breakdown.innerHTML = '<div class="breakdown-row"><span>No entries this period</span></div>'; return; }
   const byDay = {};
-  entries.forEach(e => {
-    if (!byDay[e.date]) byDay[e.date] = 0;
-    byDay[e.date] += e.hours;
-  });
-  breakdown.innerHTML = Object.entries(byDay)
-    .sort(([a],[b]) => a.localeCompare(b))
-    .map(([date, hrs]) => `
-      <div class="breakdown-row">
-        <span>${fmtDateShort(new Date(date + 'T12:00:00'))}</span>
-        <span>${hrs.toFixed(2)} hrs</span>
-      </div>
-    `).join('');
+  entries.forEach(e => { if (!byDay[e.date]) byDay[e.date] = 0; byDay[e.date] += e.hours; });
+  breakdown.innerHTML = Object.entries(byDay).sort(([a],[b]) => a.localeCompare(b)).map(([date, hrs]) => '<div class="breakdown-row"><span>' + fmtDateShort(new Date(date + 'T12:00:00')) + '</span><span>' + hrs.toFixed(2) + ' hrs</span></div>').join('');
 }
-
 function getEntriesInPeriod(bounds) {
-  const start = bounds.start.toISOString().split('T')[0];
-  const end = bounds.end.toISOString().split('T')[0];
+  const start = bounds.start.toISOString().split('T')[0], end = bounds.end.toISOString().split('T')[0];
   return state.entries.filter(e => e.date >= start && e.date <= end);
 }
 
-// ---- REPORT ----
 function generateReport(mode) {
-  const bounds = currentPeriodView === 'current'
-    ? getPeriodBounds(state.periodType, state.startDay)
-    : getPrevPeriod(state.periodType, state.startDay);
-
-  const entries = getEntriesInPeriod(bounds);
-  const total = entries.reduce((s, e) => s + e.hours, 0);
-  const name = state.userName || 'Employee';
-
-  const byDay = {};
-  entries.forEach(e => {
-    if (!byDay[e.date]) byDay[e.date] = [];
-    byDay[e.date].push(e);
-  });
-
+  const bounds = currentPeriodView === 'current' ? getPeriodBounds(state.periodType, state.startDay) : getPrevPeriod(state.periodType, state.startDay);
+  const entries = getEntriesInPeriod(bounds), total = entries.reduce((s, e) => s + e.hours, 0), name = state.userName || 'Employee';
+  const byDay = {}; entries.forEach(e => { if (!byDay[e.date]) byDay[e.date] = []; byDay[e.date].push(e); });
   let lines = [];
-  lines.push(`TIMESHEET — ${name.toUpperCase()}`);
-  lines.push(`Pay Period: ${fmtDate(bounds.start)} to ${fmtDate(bounds.end)}`);
-  lines.push(`Generated: ${new Date().toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'})}`);
-  lines.push('');
-  lines.push('─'.repeat(38));
-
+  lines.push('TIMESHEET - ' + name.toUpperCase());
+  lines.push('Pay Period: ' + fmtDate(bounds.start) + ' to ' + fmtDate(bounds.end));
+  lines.push('Generated: ' + new Date().toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'}));
+  lines.push(''); lines.push('-'.repeat(38));
   Object.entries(byDay).sort(([a],[b]) => a.localeCompare(b)).forEach(([date, dayEntries]) => {
-    const dayDate = new Date(date + 'T12:00:00');
     const dayTotal = dayEntries.reduce((s,e) => s + e.hours, 0);
-    lines.push('');
-    lines.push(`${fmtDateShort(dayDate)}`);
-    dayEntries.forEach(e => {
-      lines.push(`  ${e.inTime} - ${e.outTime}  →  ${e.hours.toFixed(2)} hrs`);
-    });
-    if (dayEntries.length > 1) lines.push(`  Subtotal: ${dayTotal.toFixed(2)} hrs`);
+    lines.push(''); lines.push(fmtDateShort(new Date(date + 'T12:00:00')));
+    dayEntries.forEach(e => lines.push('  ' + e.inTime + ' - ' + e.outTime + '  >>  ' + e.hours.toFixed(2) + ' hrs'));
+    if (dayEntries.length > 1) lines.push('  Subtotal: ' + dayTotal.toFixed(2) + ' hrs');
   });
-
-  lines.push('');
-  lines.push('─'.repeat(38));
-  lines.push(`TOTAL HOURS: ${total.toFixed(2)}`);
-  lines.push('');
-  lines.push('(Hours rounded up to nearest 0.25)');
-
+  lines.push(''); lines.push('-'.repeat(38)); lines.push('TOTAL HOURS: ' + total.toFixed(2)); lines.push(''); lines.push('(Hours rounded up to nearest 0.25)');
   currentReportText = lines.join('\n');
-
   if (mode === 'email' && state.bossEmail) {
-    const subject = encodeURIComponent(`Timesheet - ${name} - ${fmtDate(bounds.start)} to ${fmtDate(bounds.end)}`);
-    const body = encodeURIComponent(currentReportText);
-    window.location.href = `mailto:${state.bossEmail}?subject=${subject}&body=${body}`;
+    window.location.href = 'mailto:' + state.bossEmail + '?subject=' + encodeURIComponent('Timesheet - ' + name + ' - ' + fmtDate(bounds.start) + ' to ' + fmtDate(bounds.end)) + '&body=' + encodeURIComponent(currentReportText);
     return;
   }
-
   document.getElementById('report-text-display').textContent = currentReportText;
-  document.getElementById('modal-sub').textContent =
-    `${total.toFixed(2)} hours • ${entries.length} entries`;
+  document.getElementById('modal-sub').textContent = total.toFixed(2) + ' hours - ' + entries.length + ' entries';
   document.getElementById('report-modal').classList.add('active');
 }
+function shareReport() { if (navigator.share) { navigator.share({ text: currentReportText }).catch(() => copyFallback()); } else { copyFallback(); } }
+function copyFallback() { navigator.clipboard.writeText(currentReportText).then(() => { closeModal(); showToast('Copied to clipboard'); }); }
+function closeModal() { document.getElementById('report-modal').classList.remove('active'); }
 
-function shareReport() {
-  if (navigator.share) {
-    navigator.share({ text: currentReportText }).catch(() => copyFallback());
-  } else {
-    copyFallback();
-  }
-}
-
-function copyFallback() {
-  navigator.clipboard.writeText(currentReportText).then(() => {
-    closeModal();
-    showToast('Copied to clipboard');
-  });
-}
-
-function closeModal() {
-  document.getElementById('report-modal').classList.remove('active');
-}
-
-// ---- SETTINGS ----
 function setPeriodType(val) {
   state.periodType = val;
-  document.querySelectorAll('.period-selector .period-opt').forEach(el => {
-    if (el.dataset.val === val) el.classList.add('active');
-    else if (['weekly','biweekly','semimonthly'].includes(el.dataset.val)) el.classList.remove('active');
-  });
-  const startRow = document.getElementById('start-day-row');
-  startRow.style.display = val === 'semimonthly' ? 'none' : 'block';
-  save();
-  renderSummary();
+  document.querySelectorAll('.period-selector .period-opt').forEach(el => { if (['weekly','biweekly','semimonthly'].includes(el.dataset.val)) el.classList.toggle('active', el.dataset.val === val); });
+  document.getElementById('start-day-row').style.display = val === 'semimonthly' ? 'none' : 'block';
+  saveSettings_store(); renderSummary();
 }
-
 function setStartDay(val) {
   state.startDay = val;
-  document.querySelectorAll('#day-selector .period-opt').forEach(el => {
-    el.classList.toggle('active', parseInt(el.dataset.val) === val);
-  });
-  save();
-  renderSummary();
+  document.querySelectorAll('#day-selector .period-opt').forEach(el => el.classList.toggle('active', parseInt(el.dataset.val) === val));
+  saveSettings_store(); renderSummary();
 }
-
-function saveSettings() {
-  state.userName = document.getElementById('setting-name').value.trim();
-  state.bossEmail = document.getElementById('setting-boss-email').value.trim();
-  save();
-  showToast('Settings saved');
-}
-
+function saveSettings() { state.userName = document.getElementById('setting-name').value.trim(); state.bossEmail = document.getElementById('setting-boss-email').value.trim(); saveSettings_store(); showToast('Settings saved'); }
 function loadSettingsUI() {
   document.getElementById('setting-name').value = state.userName || '';
   document.getElementById('setting-boss-email').value = state.bossEmail || '';
-  document.querySelectorAll('.period-selector .period-opt').forEach(el => {
-    if (['weekly','biweekly','semimonthly'].includes(el.dataset.val)) {
-      el.classList.toggle('active', el.dataset.val === state.periodType);
-    }
-  });
-  document.querySelectorAll('#day-selector .period-opt').forEach(el => {
-    el.classList.toggle('active', parseInt(el.dataset.val) === state.startDay);
-  });
-  const startRow = document.getElementById('start-day-row');
-  startRow.style.display = state.periodType === 'semimonthly' ? 'none' : 'block';
+  document.querySelectorAll('.period-selector .period-opt').forEach(el => { if (['weekly','biweekly','semimonthly'].includes(el.dataset.val)) el.classList.toggle('active', el.dataset.val === state.periodType); });
+  document.querySelectorAll('#day-selector .period-opt').forEach(el => el.classList.toggle('active', parseInt(el.dataset.val) === state.startDay));
+  document.getElementById('start-day-row').style.display = state.periodType === 'semimonthly' ? 'none' : 'block';
 }
-
 function setPeriodView(which) {
   currentPeriodView = which;
   document.getElementById('btn-current-period').classList.toggle('active', which === 'current');
   document.getElementById('btn-prev-period').classList.toggle('active', which === 'prev');
   renderSummary();
 }
-
 function clearAllData() {
   if (confirm('Delete all time entries? This cannot be undone.')) {
-    state.entries = [];
-    state.clockedIn = false;
-    state.clockInTime = null;
-    save();
-    renderLog();
-    renderSummary();
-    updateClockUI();
-    showToast('All entries cleared');
+    state.entries = []; state.clockedIn = false; state.clockInTime = null;
+    logFileLoaded = false; unsavedChanges = false;
+    updateLogStatus('No log loaded -- tap LOAD LOG to restore your entries', '');
+    renderLog(); renderSummary(); updateClockUI(); showToast('All entries cleared');
   }
 }
 
-// ---- NAVIGATION ----
 const navBtns = document.querySelectorAll('.nav-btn');
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  navBtns.forEach((b, i) => {
-    b.classList.toggle('active', ['clock','log','summary','settings'][i] === name);
-  });
+  navBtns.forEach((b, i) => b.classList.toggle('active', ['clock','log','summary','settings'][i] === name));
   if (name === 'summary') renderSummary();
   if (name === 'log') renderLog();
 }
 
-// ---- LIVE CLOCK ----
 function tickClock() {
   const now = new Date();
-  document.getElementById('live-time').textContent =
-    now.toLocaleTimeString('en-US', { hour12: true, timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', second: '2-digit' });
-  document.getElementById('live-date').textContent =
-    now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', timeZone: 'America/New_York' }).toUpperCase();
+  document.getElementById('live-time').textContent = now.toLocaleTimeString('en-US', { hour12: true, timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', second: '2-digit' });
+  document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', timeZone: 'America/New_York' }).toUpperCase();
 }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
 
-// ---- TOAST ----
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-// ---- INIT ----
 function init() {
-  load();
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('manual-date').value = today;
-  updateClockUI();
-  renderLog();
-  renderSummary();
-  loadSettingsUI();
-  tickClock();
+  loadSettings_store();
+  document.getElementById('manual-date').value = new Date().toISOString().split('T')[0];
+  updateClockUI(); renderLog(); renderSummary(); loadSettingsUI(); tickClock();
   setInterval(tickClock, 1000);
-
-  // Close modal on overlay tap
-  document.getElementById('report-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
+  document.getElementById('report-modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 }
-
 init();
 </script>
 </body>
