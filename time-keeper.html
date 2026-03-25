@@ -9,116 +9,131 @@
 <title>Timekeeper</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0a; --surface: #141414; --surface2: #1c1c1c; --border: #2a2a2a;
-    --accent: #e8ff47; --accent2: #47ffe8; --danger: #ff4747; --warn: #ffaa47;
-    --text: #f0f0f0; --text-dim: #666; --text-muted: #333;
-    --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; min-height: 100dvh; overflow-x: hidden; padding-top: var(--safe-top); padding-bottom: calc(var(--safe-bottom) + 80px); }
-  .nav { position: fixed; bottom: 0; left: 0; right: 0; padding-bottom: var(--safe-bottom); background: rgba(10,10,10,0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--border); display: flex; z-index: 100; }
-  .nav-btn { flex: 1; padding: 14px 8px 10px; background: none; border: none; color: var(--text-dim); font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: color 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .nav-btn svg { width: 20px; height: 20px; }
-  .nav-btn.active { color: var(--accent); }
-  .page { display: none; padding: 20px 16px; }
-  .page.active { display: block; }
-  .page-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-  .page-title { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text); }
-  .page-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; letter-spacing: 0.5px; }
-  .clock-display { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 20px; }
-  .current-time { font-size: 48px; font-weight: 300; letter-spacing: -1px; color: var(--accent); line-height: 1; }
-  .current-date { font-size: 12px; color: var(--text-dim); margin-top: 8px; letter-spacing: 1px; }
-  .clocked-in-badge { display: inline-block; margin-top: 12px; padding: 4px 12px; border-radius: 20px; font-size: 11px; letter-spacing: 1.5px; font-weight: 600; text-transform: uppercase; }
-  .clocked-in-badge.in { background: rgba(232,255,71,0.1); color: var(--accent); border: 1px solid rgba(232,255,71,0.3); }
-  .clocked-in-badge.out { background: rgba(255,71,71,0.1); color: var(--danger); border: 1px solid rgba(255,71,71,0.3); }
-  .btn-clock { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: all 0.15s; margin-bottom: 12px; }
-  .btn-clock.clock-in { background: var(--accent); color: #0a0a0a; }
-  .btn-clock.clock-in:active { transform: scale(0.98); background: #d4eb3a; }
-  .btn-clock.clock-out { background: var(--danger); color: white; }
-  .btn-clock.clock-out:active { transform: scale(0.98); background: #e03e3e; }
-  .btn-clock:disabled { opacity: 0.3; cursor: not-allowed; }
-  .manual-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
-  .manual-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); font-weight: 600; }
-  .form-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 15px; padding: 10px 12px; width: 100%; outline: none; transition: border-color 0.2s; }
-  .form-input:focus { border-color: var(--accent); }
-  .form-input[type="date"], .form-input[type="time"] { color-scheme: dark; }
-  .form-note { font-size: 10px; color: var(--text-dim); margin-bottom: 10px; letter-spacing: 0.3px; }
-  .btn-add { width: 100%; padding: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; color: var(--accent2); font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
-  .btn-add:active { background: rgba(71, 255, 232, 0.1); }
-  .entries-list { display: flex; flex-direction: column; gap: 8px; }
-  .entry-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
-  .entry-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-  .entry-info { flex: 1; min-width: 0; }
-  .entry-date { font-size: 11px; color: var(--text-dim); letter-spacing: 0.5px; }
-  .entry-times { font-size: 14px; color: var(--text); margin-top: 2px; }
-  .entry-hours { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
-  .entry-delete { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; font-size: 18px; line-height: 1; transition: color 0.15s; }
-  .entry-delete:active { color: var(--danger); }
-  .no-entries { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 13px; letter-spacing: 0.5px; }
-  .period-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-  .period-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
-  .period-dates { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
-  .period-total { font-family: 'Barlow Condensed', sans-serif; font-size: 52px; font-weight: 700; color: var(--accent); letter-spacing: -1px; line-height: 1; }
-  .period-total-label { font-size: 12px; color: var(--text-dim); letter-spacing: 1px; margin-top: 4px; }
-  .period-breakdown { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; display: flex; flex-direction: column; gap: 6px; }
-  .breakdown-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); }
-  .breakdown-row span:last-child { color: var(--text); }
-  .period-nav { display: flex; gap: 10px; margin-bottom: 16px; }
-  .period-nav-btn { flex: 1; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 12px; cursor: pointer; transition: all 0.15s; text-align: center; }
-  .period-nav-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(232,255,71,0.05); }
-  .btn-report { width: 100%; padding: 16px; background: var(--accent); border: none; border-radius: 10px; color: #0a0a0a; font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.15s; margin-bottom: 10px; }
-  .btn-report:active { background: #d4eb3a; transform: scale(0.99); }
-  .btn-report.secondary { background: transparent; border: 1px solid var(--accent2); color: var(--accent2); }
-  .btn-report.secondary:active { background: rgba(71,255,232,0.08); }
-  .log-file-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-  .log-file-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
-  .log-file-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
-  .log-file-status { font-size: 11px; color: var(--text-dim); margin-bottom: 12px; padding: 8px 10px; background: var(--surface2); border-radius: 6px; border-left: 3px solid var(--border); }
-  .log-file-status.loaded { border-left-color: var(--accent); color: var(--accent); }
-  .log-file-status.unsaved { border-left-color: var(--warn); color: var(--warn); }
-  .log-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .btn-log { padding: 12px 8px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.15s; text-align: center; }
-  .btn-log.load { background: var(--surface2); border: 1px solid var(--accent2); color: var(--accent2); }
-  .btn-log.save { background: var(--surface2); border: 1px solid var(--accent); color: var(--accent); }
-  .btn-log:active { opacity: 0.7; transform: scale(0.98); }
-  #file-input { display: none; }
-  .setting-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 10px; }
-  .setting-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text); margin-bottom: 8px; }
-  .setting-desc { font-size: 11px; color: var(--text-dim); margin-bottom: 10px; }
-  .period-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .period-opt { padding: 8px 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: pointer; text-align: center; transition: all 0.15s; }
-  .period-opt.active { border-color: var(--accent); color: var(--accent); background: rgba(232,255,71,0.05); }
-  .boss-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 10px 12px; width: 100%; outline: none; transition: border-color 0.2s; margin-bottom: 8px; }
-  .boss-input:focus { border-color: var(--accent2); }
-  .btn-save { padding: 10px 20px; background: var(--surface2); border: 1px solid var(--accent2); border-radius: 8px; color: var(--accent2); font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: flex-end; justify-content: center; padding-bottom: calc(var(--safe-bottom) + 10px); }
-  .modal-overlay.active { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px 16px 12px 12px; width: 100%; max-width: 480px; padding: 20px; max-height: 80dvh; overflow-y: auto; }
-  .modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
-  .modal-sub { font-size: 11px; color: var(--text-dim); margin-bottom: 16px; }
-  .report-text { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; line-height: 1.7; white-space: pre-wrap; color: var(--text); margin-bottom: 14px; max-height: 300px; overflow-y: auto; }
-  .modal-actions { display: flex; gap: 8px; }
-  .modal-btn { flex: 1; padding: 12px; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; border: none; transition: all 0.15s; }
-  .modal-btn.primary { background: var(--accent); color: #0a0a0a; }
-  .modal-btn.ghost { background: var(--surface2); color: var(--text-dim); }
-  .modal-btn:active { transform: scale(0.98); }
-  .toast { position: fixed; top: calc(var(--safe-top) + 16px); left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--accent); color: #0a0a0a; padding: 10px 20px; border-radius: 20px; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; z-index: 300; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); white-space: nowrap; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .divider { height: 1px; background: var(--border); margin: 16px 0; }
-  .btn-danger { width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(255,71,71,0.3); border-radius: 8px; color: var(--danger); font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; opacity: 0.7; }
-  .btn-danger:active { opacity: 1; background: rgba(255,71,71,0.08); }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .pulsing { animation: pulse 1.5s ease-in-out infinite; }
+:root {
+  --bg:#0a0a0a;--surface:#141414;--surface2:#1c1c1c;--border:#2a2a2a;
+  --accent:#e8ff47;--accent2:#47ffe8;--danger:#ff4747;--warn:#ffaa47;
+  --text:#f0f0f0;--text-dim:#666;--text-muted:#333;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;min-height:100dvh;overflow-x:hidden;padding-top:var(--safe-top);padding-bottom:calc(var(--safe-bottom) + 80px);}
+.nav{position:fixed;bottom:0;left:0;right:0;padding-bottom:var(--safe-bottom);background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;z-index:100;}
+.nav-btn{flex:1;padding:14px 8px 10px;background:none;border:none;color:var(--text-dim);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:color 0.2s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.nav-btn svg{width:20px;height:20px;}
+.nav-btn.active{color:var(--accent);}
+.page{display:none;padding:20px 16px;}
+.page.active{display:block;}
+.page-header{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.page-title{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text);}
+.page-sub{font-size:11px;color:var(--text-dim);margin-top:4px;letter-spacing:0.5px;}
+.clock-display{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;margin-bottom:20px;}
+.current-time{font-size:48px;font-weight:300;letter-spacing:-1px;color:var(--accent);line-height:1;}
+.current-date{font-size:12px;color:var(--text-dim);margin-top:8px;letter-spacing:1px;}
+.clocked-in-badge{display:inline-block;margin-top:12px;padding:4px 12px;border-radius:20px;font-size:11px;letter-spacing:1.5px;font-weight:600;text-transform:uppercase;}
+.clocked-in-badge.in{background:rgba(232,255,71,0.1);color:var(--accent);border:1px solid rgba(232,255,71,0.3);}
+.clocked-in-badge.out{background:rgba(255,71,71,0.1);color:var(--danger);border:1px solid rgba(255,71,71,0.3);}
+.btn-clock{width:100%;padding:18px;border:none;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all 0.15s;margin-bottom:12px;}
+.btn-clock.clock-in{background:var(--accent);color:#0a0a0a;}
+.btn-clock.clock-in:active{transform:scale(0.98);background:#d4eb3a;}
+.btn-clock.clock-out{background:var(--danger);color:white;}
+.btn-clock.clock-out:active{transform:scale(0.98);background:#e03e3e;}
+.btn-clock:disabled{opacity:0.3;cursor:not-allowed;}
+.manual-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;}
+.manual-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);font-weight:600;}
+.form-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;padding:10px 12px;width:100%;outline:none;transition:border-color 0.2s;}
+.form-input:focus{border-color:var(--accent);}
+.form-input[type="date"],.form-input[type="time"]{color-scheme:dark;}
+.form-note{font-size:10px;color:var(--text-dim);margin-bottom:10px;letter-spacing:0.3px;}
+.btn-add{width:100%;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--accent2);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
+.btn-add:active{background:rgba(71,255,232,0.1);}
+.entries-list{display:flex;flex-direction:column;gap:8px;}
+.entry-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.15s;}
+.entry-card:active{border-color:var(--accent2);}
+.entry-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.entry-info{flex:1;min-width:0;}
+.entry-date{font-size:11px;color:var(--text-dim);letter-spacing:0.5px;}
+.entry-times{font-size:14px;color:var(--text);margin-top:2px;}
+.entry-hours{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--accent);flex-shrink:0;}
+.entry-edit-hint{font-size:10px;color:var(--text-muted);flex-shrink:0;letter-spacing:0.5px;}
+.entry-delete{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px;font-size:18px;line-height:1;transition:color 0.15s;}
+.entry-delete:active{color:var(--danger);}
+.no-entries{text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px;letter-spacing:0.5px;}
+.period-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
+.period-label{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+.period-dates{font-size:13px;color:var(--text-dim);margin-bottom:12px;}
+.period-total{font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:700;color:var(--accent);letter-spacing:-1px;line-height:1;}
+.period-total-label{font-size:12px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;}
+.period-breakdown{margin-top:16px;border-top:1px solid var(--border);padding-top:14px;display:flex;flex-direction:column;gap:6px;}
+.breakdown-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);}
+.breakdown-row span:last-child{color:var(--text);}
+.period-nav{display:flex;gap:10px;margin-bottom:16px;}
+.period-nav-btn{flex:1;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;transition:all 0.15s;text-align:center;}
+.period-nav-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,0.05);}
+.btn-report{width:100%;padding:16px;background:var(--accent);border:none;border-radius:10px;color:#0a0a0a;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.15s;margin-bottom:10px;}
+.btn-report:active{background:#d4eb3a;transform:scale(0.99);}
+.btn-report.secondary{background:transparent;border:1px solid var(--accent2);color:var(--accent2);}
+.btn-report.secondary:active{background:rgba(71,255,232,0.08);}
+.log-file-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;}
+.log-file-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;}
+.log-file-desc{font-size:11px;color:var(--text-muted);margin-bottom:14px;line-height:1.6;}
+.log-file-status{font-size:11px;color:var(--text-dim);margin-bottom:12px;padding:8px 10px;background:var(--surface2);border-radius:6px;border-left:3px solid var(--border);}
+.log-file-status.loaded{border-left-color:var(--accent);color:var(--accent);}
+.log-file-status.unsaved{border-left-color:var(--warn);color:var(--warn);}
+.log-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.btn-log{padding:12px 8px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;transition:all 0.15s;text-align:center;}
+.btn-log.load{background:var(--surface2);border:1px solid var(--accent2);color:var(--accent2);}
+.btn-log.save{background:var(--surface2);border:1px solid var(--accent);color:var(--accent);}
+.btn-log:active{opacity:0.7;transform:scale(0.98);}
+#file-input{display:none;}
+.setting-row{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:10px;}
+.setting-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text);margin-bottom:8px;}
+.setting-desc{font-size:11px;color:var(--text-dim);margin-bottom:10px;}
+.period-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.period-opt{padding:8px 6px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;text-align:center;transition:all 0.15s;}
+.period-opt.active{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,0.05);}
+.boss-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px 12px;width:100%;outline:none;transition:border-color 0.2s;margin-bottom:8px;}
+.boss-input:focus{border-color:var(--accent2);}
+.btn-save{padding:10px 20px;background:var(--surface2);border:1px solid var(--accent2);border-radius:8px;color:var(--accent2);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
+.period-override-row{display:flex;gap:8px;align-items:flex-end;margin-top:10px;}
+.period-override-row .form-input{margin-bottom:0;}
+.btn-override{padding:10px 14px;background:var(--surface2);border:1px solid var(--warn);border-radius:8px;color:var(--warn);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.btn-clear-override{padding:10px 14px;background:var(--surface2);border:1px solid var(--text-muted);border-radius:8px;color:var(--text-muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.override-status{font-size:11px;color:var(--warn);margin-top:8px;display:none;}
+.override-status.active{display:block;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:flex-end;justify-content:center;padding-bottom:calc(var(--safe-bottom) + 10px);}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px 16px 12px 12px;width:100%;max-width:480px;padding:20px;max-height:85dvh;overflow-y:auto;}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.modal-sub{font-size:11px;color:var(--text-dim);margin-bottom:16px;}
+.report-text{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;line-height:1.7;white-space:pre-wrap;color:var(--text);margin-bottom:14px;max-height:300px;overflow-y:auto;}
+.modal-actions{display:flex;gap:8px;}
+.modal-btn{flex:1;padding:12px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;transition:all 0.15s;}
+.modal-btn.primary{background:var(--accent);color:#0a0a0a;}
+.modal-btn.ghost{background:var(--surface2);color:var(--text-dim);}
+.modal-btn.danger{background:transparent;border:1px solid var(--danger);color:var(--danger);}
+.modal-btn:active{transform:scale(0.98);}
+/* EDIT MODAL FIELDS */
+.edit-field{margin-bottom:14px;}
+.edit-field .form-label{display:block;margin-bottom:6px;}
+.edit-field .form-input{width:100%;}
+.edit-hours-note{font-size:10px;color:var(--text-dim);margin-top:4px;}
+.toast{position:fixed;top:calc(var(--safe-top) + 16px);left:50%;transform:translateX(-50%) translateY(-80px);background:var(--accent);color:#0a0a0a;padding:10px 20px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;z-index:300;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.divider{height:1px;background:var(--border);margin:16px 0;}
+.btn-danger{width:100%;padding:12px;background:transparent;border:1px solid rgba(255,71,71,0.3);border-radius:8px;color:var(--danger);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;opacity:0.7;}
+.btn-danger:active{opacity:1;background:rgba(255,71,71,0.08);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.pulsing{animation:pulse 1.5s ease-in-out infinite;}
 </style>
 </head>
 <body>
 
 <input type="file" id="file-input" accept=".timekeeperlog,.json">
 
+<!-- CLOCK PAGE -->
 <div id="page-clock" class="page active">
   <div class="page-header">
     <div class="page-title">Clock</div>
@@ -156,14 +171,16 @@
   </div>
 </div>
 
+<!-- LOG PAGE -->
 <div id="page-log" class="page">
   <div class="page-header">
     <div class="page-title">Log</div>
-    <div class="page-sub" id="log-count">0 entries</div>
+    <div class="page-sub" id="log-count">0 entries &mdash; tap any to edit</div>
   </div>
   <div class="entries-list" id="entries-list"></div>
 </div>
 
+<!-- SUMMARY PAGE -->
 <div id="page-summary" class="page">
   <div class="page-header">
     <div class="page-title">Summary</div>
@@ -184,6 +201,7 @@
   <button class="btn-report secondary" onclick="generateReport('email')">EMAIL TO BOSS</button>
 </div>
 
+<!-- SETTINGS PAGE -->
 <div id="page-settings" class="page">
   <div class="page-header">
     <div class="page-title">Settings</div>
@@ -225,6 +243,19 @@
   </div>
 
   <div class="setting-row">
+    <div class="setting-label">Period Start Override</div>
+    <div class="setting-desc">Force the current period to start on a specific date. Useful if your cycle is off.</div>
+    <div class="period-override-row">
+      <div class="form-group" style="flex:1">
+        <input class="form-input" type="date" id="period-override-date">
+      </div>
+      <button class="btn-override" onclick="applyPeriodOverride()">SET</button>
+      <button class="btn-clear-override" onclick="clearPeriodOverride()">CLEAR</button>
+    </div>
+    <div class="override-status" id="override-status">Override active</div>
+  </div>
+
+  <div class="setting-row">
     <div class="setting-label">Your Name</div>
     <input class="boss-input" type="text" id="setting-name" placeholder="Your name for reports">
     <div class="setting-label" style="margin-top:12px">Boss Email</div>
@@ -238,14 +269,49 @@
   </div>
 </div>
 
+<!-- REPORT MODAL -->
 <div class="modal-overlay" id="report-modal">
   <div class="modal">
     <div class="modal-title">Report Ready</div>
-    <div class="modal-sub" id="modal-sub">Copy, text, or email to your boss</div>
+    <div class="modal-sub" id="modal-sub"></div>
     <div class="report-text" id="report-text-display"></div>
     <div class="modal-actions">
       <button class="modal-btn primary" onclick="shareReport()">SHARE / COPY</button>
-      <button class="modal-btn ghost" onclick="closeModal()">CLOSE</button>
+      <button class="modal-btn ghost" onclick="closeModal('report-modal')">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT ENTRY MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">Edit Entry</div>
+    <div class="modal-sub">Changes recalculate hours unless you override manually</div>
+
+    <div class="edit-field">
+      <label class="form-label">Date</label>
+      <input class="form-input" type="date" id="edit-date">
+    </div>
+    <div class="form-row">
+      <div class="edit-field">
+        <label class="form-label">Clock In</label>
+        <input class="form-input" type="time" id="edit-in">
+      </div>
+      <div class="edit-field">
+        <label class="form-label">Clock Out</label>
+        <input class="form-input" type="time" id="edit-out">
+      </div>
+    </div>
+    <div class="edit-field">
+      <label class="form-label">Hours (override)</label>
+      <input class="form-input" type="number" id="edit-hours" step="0.25" min="0" placeholder="Leave blank to auto-calculate">
+      <div class="edit-hours-note">Leave blank to auto-calculate from times above. Fill in to override.</div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:4px;flex-wrap:wrap;gap:8px;">
+      <button class="modal-btn primary" onclick="saveEditEntry()">SAVE</button>
+      <button class="modal-btn danger" onclick="deleteEditEntry()">DELETE</button>
+      <button class="modal-btn ghost" onclick="closeModal('edit-modal')">CANCEL</button>
     </div>
   </div>
 </div>
@@ -272,27 +338,53 @@
 </nav>
 
 <script>
-let state = {
-  entries: [], clockedIn: false, clockInTime: null,
-  periodType: 'biweekly', startDay: 1, userName: '', bossEmail: '',
+var state = {
+  entries:[], clockedIn:false, clockInTime:null,
+  periodType:'biweekly', startDay:1, userName:'', bossEmail:'',
+  periodOverride:null
 };
-let currentPeriodView = 'current';
-let currentReportText = '';
-let logFileLoaded = false;
-let unsavedChanges = false;
+var currentPeriodView = 'current';
+var currentReportText = '';
+var logFileLoaded = false;
+var unsavedChanges = false;
+var editingEntryId = null;
 
+// ---- SETTINGS (localStorage for prefs only) ----
 function saveSettings_store() {
-  try { localStorage.setItem('tk_settings', JSON.stringify({ periodType: state.periodType, startDay: state.startDay, userName: state.userName, bossEmail: state.bossEmail })); } catch(e) {}
+  try {
+    localStorage.setItem('tk_settings', JSON.stringify({
+      periodType:state.periodType, startDay:state.startDay,
+      userName:state.userName, bossEmail:state.bossEmail,
+      periodOverride:state.periodOverride
+    }));
+  } catch(e){}
 }
 function loadSettings_store() {
-  try { const d = localStorage.getItem('tk_settings'); if (d) { const s = JSON.parse(d); state.periodType = s.periodType || 'biweekly'; state.startDay = s.startDay ?? 1; state.userName = s.userName || ''; state.bossEmail = s.bossEmail || ''; } } catch(e) {}
+  try {
+    var d = localStorage.getItem('tk_settings');
+    if (d) {
+      var s = JSON.parse(d);
+      state.periodType = s.periodType || 'biweekly';
+      state.startDay = (s.startDay !== undefined) ? s.startDay : 1;
+      state.userName = s.userName || '';
+      state.bossEmail = s.bossEmail || '';
+      state.periodOverride = s.periodOverride || null;
+    }
+  } catch(e){}
 }
 
+// ---- LOG FILE ----
 function saveLog() {
-  const payload = JSON.stringify({ version: 1, exported: new Date().toISOString(), userName: state.userName, periodType: state.periodType, startDay: state.startDay, clockedIn: state.clockedIn, clockInTime: state.clockInTime, entries: state.entries }, null, 2);
-  const blob = new Blob([payload], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  var payload = JSON.stringify({
+    version:1, exported:new Date().toISOString(),
+    userName:state.userName, periodType:state.periodType,
+    startDay:state.startDay, periodOverride:state.periodOverride,
+    clockedIn:state.clockedIn, clockInTime:state.clockInTime,
+    entries:state.entries
+  }, null, 2);
+  var blob = new Blob([payload], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
   a.href = url; a.download = 'timekeeperlog';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
@@ -300,15 +392,13 @@ function saveLog() {
   updateLogStatus('Log saved -- load it next session to restore entries', 'loaded');
   showToast('Log saved');
 }
-
 function loadLog() { document.getElementById('file-input').click(); }
-
 document.getElementById('file-input').addEventListener('change', function(e) {
-  const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
   reader.onload = function(ev) {
     try {
-      const data = JSON.parse(ev.target.result);
+      var data = JSON.parse(ev.target.result);
       if (!data.entries) throw new Error('Invalid');
       state.entries = data.entries || [];
       state.clockedIn = data.clockedIn || false;
@@ -316,6 +406,7 @@ document.getElementById('file-input').addEventListener('change', function(e) {
       if (data.periodType) state.periodType = data.periodType;
       if (data.startDay !== undefined) state.startDay = data.startDay;
       if (data.userName) state.userName = data.userName;
+      if (data.periodOverride !== undefined) state.periodOverride = data.periodOverride;
       logFileLoaded = true; unsavedChanges = false;
       updateLogStatus('Loaded: ' + file.name + ' (' + state.entries.length + ' entries)', 'loaded');
       updateClockUI(); renderLog(); renderSummary(); loadSettingsUI();
@@ -324,9 +415,8 @@ document.getElementById('file-input').addEventListener('change', function(e) {
   };
   reader.readAsText(file); this.value = '';
 });
-
 function updateLogStatus(msg, type) {
-  const el = document.getElementById('log-status');
+  var el = document.getElementById('log-status');
   el.textContent = msg;
   el.className = 'log-file-status' + (type ? ' ' + type : '');
 }
@@ -335,189 +425,324 @@ function markUnsaved() {
   updateLogStatus(logFileLoaded ? 'Unsaved changes -- tap SAVE LOG to update your file' : 'Entries in memory -- tap SAVE LOG to create your file', 'unsaved');
 }
 
+// ---- PERIOD OVERRIDE ----
+function applyPeriodOverride() {
+  var val = document.getElementById('period-override-date').value;
+  if (!val) { showToast('Pick a date first'); return; }
+  state.periodOverride = val;
+  saveSettings_store();
+  renderSummary();
+  document.getElementById('override-status').classList.add('active');
+  document.getElementById('override-status').textContent = 'Override active: period starts ' + val;
+  showToast('Period override set');
+}
+function clearPeriodOverride() {
+  state.periodOverride = null;
+  document.getElementById('period-override-date').value = '';
+  document.getElementById('override-status').classList.remove('active');
+  saveSettings_store();
+  renderSummary();
+  showToast('Override cleared');
+}
+
+// ---- ROUNDING ----
 function roundUpQuarter(h) { return Math.ceil(h * 4) / 4; }
 
+// ---- PAY PERIOD ----
 function getPeriodBounds(type, startDay, refDate) {
-  const d = refDate ? new Date(refDate) : new Date(); d.setHours(0,0,0,0);
+  // If override is set, use it as the period start directly
+  if (state.periodOverride && !refDate) {
+    var overrideStart = new Date(state.periodOverride + 'T00:00:00');
+    var overrideEnd;
+    if (type === 'weekly') {
+      overrideEnd = new Date(overrideStart); overrideEnd.setDate(overrideStart.getDate() + 6);
+    } else if (type === 'biweekly') {
+      overrideEnd = new Date(overrideStart); overrideEnd.setDate(overrideStart.getDate() + 13);
+    } else {
+      var d2 = overrideStart.getDate();
+      var m2 = overrideStart.getMonth(); var y2 = overrideStart.getFullYear();
+      overrideEnd = d2 <= 15 ? new Date(y2, m2, 15) : new Date(y2, m2+1, 0);
+    }
+    return { start: overrideStart, end: overrideEnd };
+  }
+  var d = refDate ? new Date(refDate) : new Date(); d.setHours(0,0,0,0);
   if (type === 'weekly') {
-    const diff = (d.getDay() - startDay + 7) % 7;
-    const start = new Date(d); start.setDate(d.getDate() - diff);
-    const end = new Date(start); end.setDate(start.getDate() + 6);
-    return { start, end };
+    var diff = (d.getDay() - startDay + 7) % 7;
+    var start = new Date(d); start.setDate(d.getDate() - diff);
+    var end = new Date(start); end.setDate(start.getDate() + 6);
+    return {start:start, end:end};
   }
   if (type === 'biweekly') {
-    const diff = (d.getDay() - startDay + 7) % 7;
-    const thisWeekStart = new Date(d); thisWeekStart.setDate(d.getDate() - diff);
-    const epoch = new Date(2024, 0, 1);
+    var diff2 = (d.getDay() - startDay + 7) % 7;
+    var thisWeekStart = new Date(d); thisWeekStart.setDate(d.getDate() - diff2);
+    var epoch = new Date(2024, 0, 1);
     while (epoch.getDay() !== startDay) epoch.setDate(epoch.getDate() + 1);
-    const weeksSince = Math.floor((thisWeekStart - epoch) / (7 * 86400000));
-    const periodNum = Math.floor(weeksSince / 2);
-    const start = new Date(epoch); start.setDate(epoch.getDate() + periodNum * 14);
-    const end = new Date(start); end.setDate(start.getDate() + 13);
-    return { start, end };
+    var weeksSince = Math.floor((thisWeekStart - epoch) / (7 * 86400000));
+    var periodNum = Math.floor(weeksSince / 2);
+    var start2 = new Date(epoch); start2.setDate(epoch.getDate() + periodNum * 14);
+    var end2 = new Date(start2); end2.setDate(start2.getDate() + 13);
+    return {start:start2, end:end2};
   }
   if (type === 'semimonthly') {
-    const y = d.getFullYear(), m = d.getMonth();
+    var y = d.getFullYear(), m = d.getMonth();
     return d.getDate() <= 15
-      ? { start: new Date(y, m, 1), end: new Date(y, m, 15) }
-      : { start: new Date(y, m, 16), end: new Date(y, m+1, 0) };
+      ? {start:new Date(y,m,1), end:new Date(y,m,15)}
+      : {start:new Date(y,m,16), end:new Date(y,m+1,0)};
   }
 }
 function getPrevPeriod(type, startDay) {
-  const cur = getPeriodBounds(type, startDay);
-  const prev = new Date(cur.start); prev.setDate(prev.getDate() - 1);
-  return getPeriodBounds(type, startDay, prev);
+  var cur = getPeriodBounds(type, startDay);
+  var prev = new Date(cur.start); prev.setDate(prev.getDate() - 1);
+  // temporarily null override so prev period calculates naturally
+  var savedOverride = state.periodOverride;
+  state.periodOverride = null;
+  var result = getPeriodBounds(type, startDay, prev);
+  state.periodOverride = savedOverride;
+  return result;
 }
-function fmtDate(d) { return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
-function fmtDateShort(d) { return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' }); }
-function toESTTimeStr(date) { return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' }); }
-function toESTDateStr(date) { return date.toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); }
-function fmt12(t) { const [h, m] = t.split(':').map(Number); return (h % 12 || 12) + ':' + String(m).padStart(2,'0') + ' ' + (h >= 12 ? 'PM' : 'AM'); }
+function fmtDate(d) { return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function fmtDateShort(d) { return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); }
+function toESTTimeStr(date) { return date.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'America/New_York'}); }
+function toESTDateStr(date) { return date.toLocaleDateString('en-CA',{timeZone:'America/New_York'}); }
+function fmt12(t) { var p=t.split(':').map(Number); return (p[0]%12||12)+':'+(p[1]<10?'0':'')+p[1]+' '+(p[0]>=12?'PM':'AM'); }
+function to24(str) {
+  // Convert "9:30 AM" back to "09:30" for time inputs
+  var m = str.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!m) return '';
+  var h = parseInt(m[1]), mn = m[2], ap = m[3].toUpperCase();
+  if (ap === 'PM' && h !== 12) h += 12;
+  if (ap === 'AM' && h === 12) h = 0;
+  return (h<10?'0':'')+h+':'+mn;
+}
 
-function clockIn() { state.clockedIn = true; state.clockInTime = new Date().toISOString(); markUnsaved(); updateClockUI(); showToast('Clocked In'); }
+// ---- CLOCK IN/OUT ----
+function clockIn() { state.clockedIn=true; state.clockInTime=new Date().toISOString(); markUnsaved(); updateClockUI(); showToast('Clocked In'); }
 function clockOut() {
   if (!state.clockedIn || !state.clockInTime) return;
-  const inTime = new Date(state.clockInTime), outTime = new Date();
-  const hrs = (outTime - inTime) / 3600000;
-  const rounded = roundUpQuarter(hrs);
-  state.entries.unshift({ id: Date.now(), date: toESTDateStr(inTime), inTime: toESTTimeStr(inTime), outTime: toESTTimeStr(outTime), rawHours: hrs, hours: rounded });
-  state.clockedIn = false; state.clockInTime = null;
+  var inTime=new Date(state.clockInTime), outTime=new Date();
+  var hrs=(outTime-inTime)/3600000, rounded=roundUpQuarter(hrs);
+  state.entries.unshift({id:Date.now(), date:toESTDateStr(inTime), inTime:toESTTimeStr(inTime), outTime:toESTTimeStr(outTime), rawHours:hrs, hours:rounded, manualHours:false});
+  state.clockedIn=false; state.clockInTime=null;
   markUnsaved(); updateClockUI(); renderLog();
-  showToast('+' + rounded.toFixed(2) + ' hrs logged');
+  showToast('+'+rounded.toFixed(2)+' hrs logged');
 }
 function updateClockUI() {
-  const bi = document.getElementById('btn-clock-in'), bo = document.getElementById('btn-clock-out'), badge = document.getElementById('status-badge');
-  if (state.clockedIn) { bi.disabled = true; bo.disabled = false; badge.textContent = 'CLOCKED IN'; badge.className = 'clocked-in-badge in pulsing'; }
-  else { bi.disabled = false; bo.disabled = true; badge.textContent = 'NOT CLOCKED IN'; badge.className = 'clocked-in-badge out'; }
+  var bi=document.getElementById('btn-clock-in'), bo=document.getElementById('btn-clock-out'), badge=document.getElementById('status-badge');
+  if (state.clockedIn) { bi.disabled=true; bo.disabled=false; badge.textContent='CLOCKED IN'; badge.className='clocked-in-badge in pulsing'; }
+  else { bi.disabled=false; bo.disabled=true; badge.textContent='NOT CLOCKED IN'; badge.className='clocked-in-badge out'; }
 }
 
+// ---- MANUAL ENTRY ----
 function addManualEntry() {
-  const date = document.getElementById('manual-date').value;
-  const inT = document.getElementById('manual-in').value;
-  const outT = document.getElementById('manual-out').value;
-  if (!date || !inT || !outT) { showToast('Fill in all fields'); return; }
-  const inMs = parseTime(inT), outMs = parseTime(outT);
-  if (outMs <= inMs) { showToast('Out must be after In'); return; }
-  const hrs = (outMs - inMs) / 3600000, rounded = roundUpQuarter(hrs);
-  state.entries.unshift({ id: Date.now(), date, inTime: fmt12(inT), outTime: fmt12(outT), rawHours: hrs, hours: rounded });
+  var date=document.getElementById('manual-date').value;
+  var inT=document.getElementById('manual-in').value;
+  var outT=document.getElementById('manual-out').value;
+  if (!date||!inT||!outT) { showToast('Fill in all fields'); return; }
+  var inMs=parseTime(inT), outMs=parseTime(outT);
+  if (outMs<=inMs) { showToast('Out must be after In'); return; }
+  var hrs=(outMs-inMs)/3600000, rounded=roundUpQuarter(hrs);
+  state.entries.unshift({id:Date.now(), date:date, inTime:fmt12(inT), outTime:fmt12(outT), rawHours:hrs, hours:rounded, manualHours:false});
   markUnsaved(); renderLog();
-  showToast('+' + rounded.toFixed(2) + ' hrs added');
-  document.getElementById('manual-in').value = ''; document.getElementById('manual-out').value = '';
+  showToast('+'+rounded.toFixed(2)+' hrs added');
+  document.getElementById('manual-in').value=''; document.getElementById('manual-out').value='';
 }
-function parseTime(t) { const [h, m] = t.split(':').map(Number); return (h * 60 + m) * 60000; }
-function deleteEntry(id) { state.entries = state.entries.filter(e => e.id !== id); markUnsaved(); renderLog(); renderSummary(); showToast('Entry removed'); }
+function parseTime(t) { var p=t.split(':').map(Number); return (p[0]*60+p[1])*60000; }
+function parseTime12(str) {
+  var t24 = to24(str); if (!t24) return null;
+  return parseTime(t24);
+}
 
+// ---- EDIT ENTRY ----
+function openEditEntry(id) {
+  var entry = state.entries.find(function(e){return e.id===id;});
+  if (!entry) return;
+  editingEntryId = id;
+  document.getElementById('edit-date').value = entry.date;
+  document.getElementById('edit-in').value = to24(entry.inTime) || '';
+  document.getElementById('edit-out').value = to24(entry.outTime) || '';
+  document.getElementById('edit-hours').value = entry.manualHours ? entry.hours : '';
+  document.getElementById('edit-modal').classList.add('active');
+}
+function saveEditEntry() {
+  var entry = state.entries.find(function(e){return e.id===editingEntryId;});
+  if (!entry) return;
+  var date = document.getElementById('edit-date').value;
+  var inT = document.getElementById('edit-in').value;
+  var outT = document.getElementById('edit-out').value;
+  var hoursOverride = document.getElementById('edit-hours').value;
+  if (!date) { showToast('Date required'); return; }
+  entry.date = date;
+  if (inT) entry.inTime = fmt12(inT);
+  if (outT) entry.outTime = fmt12(outT);
+  if (hoursOverride !== '') {
+    entry.hours = parseFloat(hoursOverride);
+    entry.manualHours = true;
+  } else if (inT && outT) {
+    var inMs = parseTime(inT), outMs = parseTime(outT);
+    if (outMs > inMs) {
+      entry.hours = roundUpQuarter((outMs - inMs) / 3600000);
+      entry.manualHours = false;
+    }
+  }
+  markUnsaved(); renderLog(); renderSummary();
+  closeModal('edit-modal');
+  showToast('Entry updated');
+}
+function deleteEditEntry() {
+  state.entries = state.entries.filter(function(e){return e.id!==editingEntryId;});
+  markUnsaved(); renderLog(); renderSummary();
+  closeModal('edit-modal');
+  showToast('Entry deleted');
+}
+
+// ---- RENDER LOG ----
 function renderLog() {
-  const list = document.getElementById('entries-list'), count = document.getElementById('log-count');
-  count.textContent = state.entries.length + ' entr' + (state.entries.length !== 1 ? 'ies' : 'y');
-  if (!state.entries.length) { list.innerHTML = '<div class="no-entries">No entries yet.<br>Clock in or add manually.</div>'; return; }
-  list.innerHTML = state.entries.map(e => '<div class="entry-card"><div class="entry-dot"></div><div class="entry-info"><div class="entry-date">' + fmtDateShort(new Date(e.date + 'T12:00:00')) + '</div><div class="entry-times">' + e.inTime + ' &rarr; ' + e.outTime + '</div></div><div class="entry-hours">' + e.hours.toFixed(2) + '</div><button class="entry-delete" onclick="deleteEntry(' + e.id + ')">&#x2715;</button></div>').join('');
+  var list=document.getElementById('entries-list');
+  var count=document.getElementById('log-count');
+  count.textContent=state.entries.length+' entr'+(state.entries.length!==1?'ies':'y')+' -- tap any to edit';
+  if (!state.entries.length) { list.innerHTML='<div class="no-entries">No entries yet.<br>Clock in or add manually.</div>'; return; }
+  list.innerHTML=state.entries.map(function(e){
+    return '<div class="entry-card" onclick="openEditEntry('+e.id+')">'
+      +'<div class="entry-dot"></div>'
+      +'<div class="entry-info">'
+        +'<div class="entry-date">'+fmtDateShort(new Date(e.date+'T12:00:00'))+(e.manualHours?' <span style="color:var(--warn);font-size:9px">OVERRIDE</span>':'')+'</div>'
+        +'<div class="entry-times">'+e.inTime+' &rarr; '+e.outTime+'</div>'
+      +'</div>'
+      +'<div class="entry-hours">'+e.hours.toFixed(2)+'</div>'
+      +'<div class="entry-edit-hint">edit</div>'
+      +'</div>';
+  }).join('');
 }
 
+// ---- RENDER SUMMARY ----
 function renderSummary() {
-  const bounds = currentPeriodView === 'current' ? getPeriodBounds(state.periodType, state.startDay) : getPrevPeriod(state.periodType, state.startDay);
-  const cur = getPeriodBounds(state.periodType, state.startDay);
-  document.getElementById('clock-period-label').textContent = 'Period: ' + fmtDate(cur.start) + ' - ' + fmtDate(cur.end);
-  document.getElementById('summary-dates').textContent = fmtDate(bounds.start) + ' - ' + fmtDate(bounds.end);
-  const entries = getEntriesInPeriod(bounds);
-  const total = entries.reduce((s, e) => s + e.hours, 0);
-  document.getElementById('summary-total').textContent = total.toFixed(2);
-  const breakdown = document.getElementById('summary-breakdown');
-  if (!entries.length) { breakdown.innerHTML = '<div class="breakdown-row"><span>No entries this period</span></div>'; return; }
-  const byDay = {};
-  entries.forEach(e => { if (!byDay[e.date]) byDay[e.date] = 0; byDay[e.date] += e.hours; });
-  breakdown.innerHTML = Object.entries(byDay).sort(([a],[b]) => a.localeCompare(b)).map(([date, hrs]) => '<div class="breakdown-row"><span>' + fmtDateShort(new Date(date + 'T12:00:00')) + '</span><span>' + hrs.toFixed(2) + ' hrs</span></div>').join('');
+  var bounds = currentPeriodView==='current'
+    ? getPeriodBounds(state.periodType, state.startDay)
+    : getPrevPeriod(state.periodType, state.startDay);
+  var cur = getPeriodBounds(state.periodType, state.startDay);
+  document.getElementById('clock-period-label').textContent='Period: '+fmtDate(cur.start)+' - '+fmtDate(cur.end)+(state.periodOverride?' (override)':'');
+  document.getElementById('summary-dates').textContent=fmtDate(bounds.start)+' - '+fmtDate(bounds.end);
+  var entries=getEntriesInPeriod(bounds);
+  var total=entries.reduce(function(s,e){return s+e.hours;},0);
+  document.getElementById('summary-total').textContent=total.toFixed(2);
+  var breakdown=document.getElementById('summary-breakdown');
+  if (!entries.length) { breakdown.innerHTML='<div class="breakdown-row"><span>No entries this period</span></div>'; return; }
+  var byDay={};
+  entries.forEach(function(e){ if(!byDay[e.date]) byDay[e.date]=0; byDay[e.date]+=e.hours; });
+  breakdown.innerHTML=Object.entries(byDay).sort(function(a,b){return a[0].localeCompare(b[0]);}).map(function(pair){
+    return '<div class="breakdown-row"><span>'+fmtDateShort(new Date(pair[0]+'T12:00:00'))+'</span><span>'+pair[1].toFixed(2)+' hrs</span></div>';
+  }).join('');
 }
 function getEntriesInPeriod(bounds) {
-  const start = bounds.start.toISOString().split('T')[0], end = bounds.end.toISOString().split('T')[0];
-  return state.entries.filter(e => e.date >= start && e.date <= end);
+  var start=bounds.start.toISOString().split('T')[0], end=bounds.end.toISOString().split('T')[0];
+  return state.entries.filter(function(e){return e.date>=start && e.date<=end;});
 }
 
+// ---- REPORT ----
 function generateReport(mode) {
-  const bounds = currentPeriodView === 'current' ? getPeriodBounds(state.periodType, state.startDay) : getPrevPeriod(state.periodType, state.startDay);
-  const entries = getEntriesInPeriod(bounds), total = entries.reduce((s, e) => s + e.hours, 0), name = state.userName || 'Employee';
-  const byDay = {}; entries.forEach(e => { if (!byDay[e.date]) byDay[e.date] = []; byDay[e.date].push(e); });
-  let lines = [];
-  lines.push('TIMESHEET - ' + name.toUpperCase());
-  lines.push('Pay Period: ' + fmtDate(bounds.start) + ' to ' + fmtDate(bounds.end));
-  lines.push('Generated: ' + new Date().toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'}));
+  var bounds = currentPeriodView==='current'
+    ? getPeriodBounds(state.periodType, state.startDay)
+    : getPrevPeriod(state.periodType, state.startDay);
+  var entries=getEntriesInPeriod(bounds), total=entries.reduce(function(s,e){return s+e.hours;},0), name=state.userName||'Employee';
+  var byDay={}; entries.forEach(function(e){ if(!byDay[e.date]) byDay[e.date]=[]; byDay[e.date].push(e); });
+  var lines=[];
+  lines.push('TIMESHEET - '+name.toUpperCase());
+  lines.push('Pay Period: '+fmtDate(bounds.start)+' to '+fmtDate(bounds.end));
+  lines.push('Generated: '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}));
   lines.push(''); lines.push('-'.repeat(38));
-  Object.entries(byDay).sort(([a],[b]) => a.localeCompare(b)).forEach(([date, dayEntries]) => {
-    const dayTotal = dayEntries.reduce((s,e) => s + e.hours, 0);
-    lines.push(''); lines.push(fmtDateShort(new Date(date + 'T12:00:00')));
-    dayEntries.forEach(e => lines.push('  ' + e.inTime + ' - ' + e.outTime + '  >>  ' + e.hours.toFixed(2) + ' hrs'));
-    if (dayEntries.length > 1) lines.push('  Subtotal: ' + dayTotal.toFixed(2) + ' hrs');
+  Object.entries(byDay).sort(function(a,b){return a[0].localeCompare(b[0]);}).forEach(function(pair){
+    var dayEntries=pair[1], dayTotal=dayEntries.reduce(function(s,e){return s+e.hours;},0);
+    lines.push(''); lines.push(fmtDateShort(new Date(pair[0]+'T12:00:00')));
+    dayEntries.forEach(function(e){ lines.push('  '+e.inTime+' - '+e.outTime+'  >>  '+e.hours.toFixed(2)+' hrs'); });
+    if (dayEntries.length>1) lines.push('  Subtotal: '+dayTotal.toFixed(2)+' hrs');
   });
-  lines.push(''); lines.push('-'.repeat(38)); lines.push('TOTAL HOURS: ' + total.toFixed(2)); lines.push(''); lines.push('(Hours rounded up to nearest 0.25)');
-  currentReportText = lines.join('\n');
-  if (mode === 'email' && state.bossEmail) {
-    window.location.href = 'mailto:' + state.bossEmail + '?subject=' + encodeURIComponent('Timesheet - ' + name + ' - ' + fmtDate(bounds.start) + ' to ' + fmtDate(bounds.end)) + '&body=' + encodeURIComponent(currentReportText);
+  lines.push(''); lines.push('-'.repeat(38)); lines.push('TOTAL HOURS: '+total.toFixed(2)); lines.push(''); lines.push('(Hours rounded up to nearest 0.25)');
+  currentReportText=lines.join('\n');
+  if (mode==='email' && state.bossEmail) {
+    window.location.href='mailto:'+state.bossEmail+'?subject='+encodeURIComponent('Timesheet - '+name+' - '+fmtDate(bounds.start)+' to '+fmtDate(bounds.end))+'&body='+encodeURIComponent(currentReportText);
     return;
   }
-  document.getElementById('report-text-display').textContent = currentReportText;
-  document.getElementById('modal-sub').textContent = total.toFixed(2) + ' hours - ' + entries.length + ' entries';
+  document.getElementById('report-text-display').textContent=currentReportText;
+  document.getElementById('modal-sub').textContent=total.toFixed(2)+' hours - '+entries.length+' entries';
   document.getElementById('report-modal').classList.add('active');
 }
-function shareReport() { if (navigator.share) { navigator.share({ text: currentReportText }).catch(() => copyFallback()); } else { copyFallback(); } }
-function copyFallback() { navigator.clipboard.writeText(currentReportText).then(() => { closeModal(); showToast('Copied to clipboard'); }); }
-function closeModal() { document.getElementById('report-modal').classList.remove('active'); }
+function shareReport() {
+  if (navigator.share) { navigator.share({text:currentReportText}).catch(function(){copyFallback();}); }
+  else { copyFallback(); }
+}
+function copyFallback() { navigator.clipboard.writeText(currentReportText).then(function(){ closeModal('report-modal'); showToast('Copied to clipboard'); }); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
+// ---- SETTINGS ----
 function setPeriodType(val) {
-  state.periodType = val;
-  document.querySelectorAll('.period-selector .period-opt').forEach(el => { if (['weekly','biweekly','semimonthly'].includes(el.dataset.val)) el.classList.toggle('active', el.dataset.val === val); });
-  document.getElementById('start-day-row').style.display = val === 'semimonthly' ? 'none' : 'block';
+  state.periodType=val;
+  document.querySelectorAll('.period-selector .period-opt').forEach(function(el){ if(['weekly','biweekly','semimonthly'].includes(el.dataset.val)) el.classList.toggle('active',el.dataset.val===val); });
+  document.getElementById('start-day-row').style.display=val==='semimonthly'?'none':'block';
   saveSettings_store(); renderSummary();
 }
 function setStartDay(val) {
-  state.startDay = val;
-  document.querySelectorAll('#day-selector .period-opt').forEach(el => el.classList.toggle('active', parseInt(el.dataset.val) === val));
+  state.startDay=val;
+  document.querySelectorAll('#day-selector .period-opt').forEach(function(el){ el.classList.toggle('active',parseInt(el.dataset.val)===val); });
   saveSettings_store(); renderSummary();
 }
-function saveSettings() { state.userName = document.getElementById('setting-name').value.trim(); state.bossEmail = document.getElementById('setting-boss-email').value.trim(); saveSettings_store(); showToast('Settings saved'); }
+function saveSettings() {
+  state.userName=document.getElementById('setting-name').value.trim();
+  state.bossEmail=document.getElementById('setting-boss-email').value.trim();
+  saveSettings_store(); showToast('Settings saved');
+}
 function loadSettingsUI() {
-  document.getElementById('setting-name').value = state.userName || '';
-  document.getElementById('setting-boss-email').value = state.bossEmail || '';
-  document.querySelectorAll('.period-selector .period-opt').forEach(el => { if (['weekly','biweekly','semimonthly'].includes(el.dataset.val)) el.classList.toggle('active', el.dataset.val === state.periodType); });
-  document.querySelectorAll('#day-selector .period-opt').forEach(el => el.classList.toggle('active', parseInt(el.dataset.val) === state.startDay));
-  document.getElementById('start-day-row').style.display = state.periodType === 'semimonthly' ? 'none' : 'block';
+  document.getElementById('setting-name').value=state.userName||'';
+  document.getElementById('setting-boss-email').value=state.bossEmail||'';
+  document.querySelectorAll('.period-selector .period-opt').forEach(function(el){ if(['weekly','biweekly','semimonthly'].includes(el.dataset.val)) el.classList.toggle('active',el.dataset.val===state.periodType); });
+  document.querySelectorAll('#day-selector .period-opt').forEach(function(el){ el.classList.toggle('active',parseInt(el.dataset.val)===state.startDay); });
+  document.getElementById('start-day-row').style.display=state.periodType==='semimonthly'?'none':'block';
+  if (state.periodOverride) {
+    document.getElementById('period-override-date').value=state.periodOverride;
+    document.getElementById('override-status').classList.add('active');
+    document.getElementById('override-status').textContent='Override active: period starts '+state.periodOverride;
+  }
 }
 function setPeriodView(which) {
-  currentPeriodView = which;
-  document.getElementById('btn-current-period').classList.toggle('active', which === 'current');
-  document.getElementById('btn-prev-period').classList.toggle('active', which === 'prev');
+  currentPeriodView=which;
+  document.getElementById('btn-current-period').classList.toggle('active',which==='current');
+  document.getElementById('btn-prev-period').classList.toggle('active',which==='prev');
   renderSummary();
 }
 function clearAllData() {
   if (confirm('Delete all time entries? This cannot be undone.')) {
-    state.entries = []; state.clockedIn = false; state.clockInTime = null;
-    logFileLoaded = false; unsavedChanges = false;
-    updateLogStatus('No log loaded -- tap LOAD LOG to restore your entries', '');
+    state.entries=[]; state.clockedIn=false; state.clockInTime=null;
+    logFileLoaded=false; unsavedChanges=false;
+    updateLogStatus('No log loaded -- tap LOAD LOG to restore your entries','');
     renderLog(); renderSummary(); updateClockUI(); showToast('All entries cleared');
   }
 }
 
-const navBtns = document.querySelectorAll('.nav-btn');
+// ---- NAV ----
+var navBtns=document.querySelectorAll('.nav-btn');
 function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  navBtns.forEach((b, i) => b.classList.toggle('active', ['clock','log','summary','settings'][i] === name));
-  if (name === 'summary') renderSummary();
-  if (name === 'log') renderLog();
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('page-'+name).classList.add('active');
+  navBtns.forEach(function(b,i){b.classList.toggle('active',['clock','log','summary','settings'][i]===name);});
+  if (name==='summary') renderSummary();
+  if (name==='log') renderLog();
 }
 
+// ---- CLOCK ----
 function tickClock() {
-  const now = new Date();
-  document.getElementById('live-time').textContent = now.toLocaleTimeString('en-US', { hour12: true, timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', second: '2-digit' });
-  document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', timeZone: 'America/New_York' }).toUpperCase();
+  var now=new Date();
+  document.getElementById('live-time').textContent=now.toLocaleTimeString('en-US',{hour12:true,timeZone:'America/New_York',hour:'numeric',minute:'2-digit',second:'2-digit'});
+  document.getElementById('live-date').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',timeZone:'America/New_York'}).toUpperCase();
 }
-function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+function showToast(msg) { var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2200); }
 
+// ---- INIT ----
 function init() {
   loadSettings_store();
-  document.getElementById('manual-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('manual-date').value=new Date().toISOString().split('T')[0];
   updateClockUI(); renderLog(); renderSummary(); loadSettingsUI(); tickClock();
-  setInterval(tickClock, 1000);
-  document.getElementById('report-modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+  setInterval(tickClock,1000);
+  document.getElementById('report-modal').addEventListener('click',function(e){if(e.target===this)closeModal('report-modal');});
+  document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeModal('edit-modal');});
 }
 init();
 </script>
