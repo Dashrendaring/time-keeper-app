@@ -1,0 +1,3 @@
+# OBS Countdown file
+# Edit this line to set your target date/time (local time):
+TARGET: 2026-04-18 20:00:00
